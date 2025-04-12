@@ -2,3 +2,5 @@ lib/
 settings.json
 out/
 cache/
+.env
+broadcast/
