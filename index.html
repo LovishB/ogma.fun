@@ -14,125 +14,326 @@
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #f5f5f5;
+            background: linear-gradient(135deg, #8A2BE2, #FF69B4);
             color: #333;
+            min-height: 100vh;
         }
         .container {
             max-width: 800px;
             padding: 20px;
         }
         .card {
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 2px solid #FF69B4;
+            overflow: hidden;
+            position: relative;
+        }
+        .card:before {
+            content: "";
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 80px;
+            height: 80px;
+            background: #FFD700;
+            border-radius: 50%;
+            opacity: 0.6;
+            z-index: 0;
         }
         .card-title {
-            font-weight: 500;
+            font-weight: 700;
+            color: #8A2BE2;
+            font-size: 1.8rem;
         }
         .btn-connect {
-            background-color: #4285f4;
-            margin-bottom: 20px;
+            background-color: #FF69B4;
+            border-radius: 30px;
+            padding: 0 25px;
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.4);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+        .btn-connect:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 105, 180, 0.6);
+            background-color: #FF1493;
         }
         .btn-create {
-            background-color: #0f9d58;
+            background-color: #8A2BE2;
+            border-radius: 30px;
+            padding: 0 25px;
+            box-shadow: 0 5px 15px rgba(138, 43, 226, 0.4);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+        .btn-create:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(138, 43, 226, 0.6);
+            background-color: #7B68EE;
         }
         .status-message {
-            padding: 10px;
-            border-radius: 4px;
+            padding: 15px;
+            border-radius: 12px;
             margin: 15px 0;
+            font-weight: 500;
+            animation: fadeIn 0.5s ease;
         }
         .success {
             background-color: #d4edda;
             color: #155724;
-            border: 1px solid #c3e6cb;
+            border: 2px solid #c3e6cb;
         }
         .error {
             background-color: #f8d7da;
             color: #721c24;
-            border: 1px solid #f5c6cb;
+            border: 2px solid #f5c6cb;
         }
         .info {
             background-color: #e2f3f5;
             color: #0c5460;
-            border: 1px solid #bee5eb;
+            border: 2px solid #bee5eb;
         }
         .hidden {
             display: none;
         }
         .loader {
             display: inline-block;
-            width: 20px;
-            height: 20px;
+            width: 25px;
+            height: 25px;
             margin-right: 8px;
-            border: 3px solid #f3f3f3;
+            border: 4px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            border-top: 3px solid #3498db;
-            animation: spin 2s linear infinite;
+            border-top: 4px solid #FF69B4;
+            animation: spin 1s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
         .wallet-info {
-            font-size: 14px;
-            color: #666;
+            font-size: 16px;
+            color: #6c5ce7;
             margin-bottom: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 12px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            animation: slideIn 0.5s ease;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .wallet-info i {
+            color: #FF69B4;
+            margin-right: 10px;
         }
         .header {
             margin-bottom: 30px;
+            text-align: center;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
         }
         .header h4 {
-            color: #4285f4;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
         }
         .badge {
-            padding: 5px 10px;
+            padding: 6px 12px;
             border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
+            font-size: 14px;
+            font-weight: 600;
             margin-left: 10px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
         .badge-sepolia {
-            background-color: #ff5722;
-            color: white;
+            background-color: #FFD700;
+            color: #333;
         }
         .modal {
-            border-radius: 10px;
+            border-radius: 20px;
             max-width: 500px;
+            background: linear-gradient(135deg, #fff, #f0f0ff);
         }
         .modal-content h4 {
-            color: #0f9d58;
+            color: #8A2BE2;
+            display: flex;
+            align-items: center;
+        }
+        .modal-content h4 i {
+            margin-right: 10px;
+            color: #4CAF50;
         }
         .modal-footer {
-            padding: 10px 20px;
+            padding: 15px 20px;
             text-align: right;
         }
         .eth-address {
             font-family: monospace;
-            background: #f0f0f0;
-            padding: 5px;
-            border-radius: 4px;
+            background: #f7f7ff;
+            padding: 10px;
+            border-radius: 8px;
             font-size: 14px;
             word-break: break-all;
+            border-left: 4px solid #FF69B4;
+        }
+        .input-field input:focus {
+            border-bottom: 1px solid #FF69B4 !important;
+            box-shadow: 0 1px 0 0 #FF69B4 !important;
+        }
+        .input-field input:focus + label {
+            color: #FF69B4 !important;
+        }
+        .input-field textarea:focus {
+            border-bottom: 1px solid #FF69B4 !important;
+            box-shadow: 0 1px 0 0 #FF69B4 !important;
+        }
+        .input-field textarea:focus + label {
+            color: #FF69B4 !important;
+        }
+        .card-content {
+            z-index: 1;
+            position: relative;
+        }
+        .rocket {
+            position: absolute;
+            top: -50px;
+            right: -30px;
+            font-size: 5rem;
+            opacity: 0.2;
+            transform: rotate(45deg);
+        }
+        .moon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-size: 3rem;
+            color: #FFD700;
+            opacity: 0.7;
+            z-index: -1;
+        }
+        .coin {
+            position: fixed;
+            animation: floatCoin 8s ease-in-out infinite;
+            color: #FFD700;
+            font-size: 2rem;
+            opacity: 0.6;
+            z-index: -1;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            transform-origin: center;
+        }
+        
+        /* Different animation durations for more variety */
+        .coin1, .coin4, .coin7, .coin10, .coin13 { animation-duration: 7s; }
+        .coin2, .coin5, .coin8, .coin11, .coin14 { animation-duration: 8s; }
+        .coin3, .coin6, .coin9, .coin12, .coin15 { animation-duration: 9s; }
+        .coin1 { top: 10%; left: 5%; animation-delay: 0s; }
+        .coin2 { top: 20%; right: 10%; animation-delay: 1s; }
+        .coin3 { bottom: 15%; left: 15%; animation-delay: 2s; }
+        .coin4 { top: 30%; left: 25%; animation-delay: 0.5s; }
+        .coin5 { top: 15%; right: 20%; animation-delay: 1.5s; }
+        .coin6 { bottom: 25%; left: 35%; animation-delay: 2.5s; }
+        .coin7 { top: 45%; right: 15%; animation-delay: 3s; }
+        .coin8 { bottom: 40%; right: 25%; animation-delay: 3.5s; }
+        .coin9 { top: 60%; left: 10%; animation-delay: 4s; }
+        .coin10 { top: 5%; right: 30%; animation-delay: 0.2s; }
+        .coin11 { top: 70%; right: 5%; animation-delay: 1.7s; }
+        .coin12 { bottom: 10%; right: 35%; animation-delay: 2.3s; }
+        .coin13 { top: 25%; left: 45%; animation-delay: 1.2s; }
+        .coin14 { top: 50%; right: 40%; animation-delay: 2.8s; }
+        .coin15 { bottom: 30%; left: 3%; animation-delay: 3.2s; }
+        
+        @keyframes floatCoin {
+            0% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-15px) rotate(5deg); }
+            50% { transform: translateY(-30px) rotate(10deg); }
+            75% { transform: translateY(-15px) rotate(5deg); }
+            100% { transform: translateY(0) rotate(0deg); }
+        }
+        .input-field {
+            margin-bottom: 25px;
+        }
+        #tx-link {
+            background-color: #FFD700;
+            color: #333;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(255, 215, 0, 0.4);
+            border-radius: 30px;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+        #tx-link:hover {
+            background-color: #FFC107;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 215, 0, 0.6);
         }
     </style>
 </head>
 <body>
+    <div class="moon">🌕</div>
+    <div class="coin coin1">💰</div>
+    <div class="coin coin2">🪙</div>
+    <div class="coin coin3">💎</div>
+    <div class="coin coin4">💸</div>
+    <div class="coin coin5">🚀</div>
+    <div class="coin coin6">⭐</div>
+    <div class="coin coin7">💰</div>
+    <div class="coin coin8">🪙</div>
+    <div class="coin coin9">💎</div>
+    <div class="coin coin10">🔥</div>
+    <div class="coin coin11">🌠</div>
+    <div class="coin coin12">💯</div>
+    <div class="coin coin13">🤑</div>
+    <div class="coin coin14">💵</div>
+    <div class="coin coin15">🌟</div>
+    
     <div class="container">
         <div class="header center-align">
-            <h4>Ogma Token Creator <span class="badge badge-sepolia">Sepolia</span></h4>
-            <p>Create your own ERC20 token on Sepolia Testnet</p>
+            <h4>🚀 Ogma Token Creator <span class="badge badge-sepolia">Sepolia</span></h4>
+            <p>Create your own memecoin and launch to the moon! 🌕</p>
         </div>
 
         <div class="card">
             <div class="card-content">
-                <span class="card-title">Create New Token</span>
+                <span class="rocket">🚀</span>
+                <span class="card-title">Create Your Memecoin</span>
                 
                 <!-- Connect Wallet Section -->
                 <div class="section">
                     <button id="connect-wallet" class="waves-effect waves-light btn btn-connect">
                         <i class="material-icons left">account_balance_wallet</i>Connect Wallet
                     </button>
-                    <div id="wallet-info" class="wallet-info hidden">
-                        Connected: <span id="wallet-address" class="eth-address"></span>
+                <div id="wallet-info" class="wallet-info hidden">
+                        <i class="material-icons">account_balance_wallet</i> Connected: <span id="wallet-address" class="eth-address"></span>
                     </div>
                 </div>
 
@@ -142,32 +343,32 @@
                         <div class="input-field col s12">
                             <input id="token-name" type="text" class="validate">
                             <label for="token-name">Token Name</label>
-                            <span class="helper-text">E.g., "My Awesome Token"</span>
+                            <span class="helper-text">E.g., "RocketDoge" or "MoonLambo"</span>
                         </div>
                     </div>
                     <div class="row">
                         <div class="input-field col s12">
                             <input id="token-symbol" type="text" class="validate">
                             <label for="token-symbol">Token Symbol</label>
-                            <span class="helper-text">E.g., "MAT"</span>
+                            <span class="helper-text">E.g., "RKTDG" or "MLMBO" (2-5 characters)</span>
                         </div>
                     </div>
                     <div class="row">
                         <div class="input-field col s12">
                             <input id="token-uri" type="text" class="validate">
                             <label for="token-uri">Token URI</label>
-                            <span class="helper-text">URL to token metadata/image</span>
+                            <span class="helper-text">Link to your memecoin logo/mascot</span>
                         </div>
                     </div>
                     <div class="row">
                         <div class="input-field col s12">
                             <textarea id="token-description" class="materialize-textarea"></textarea>
                             <label for="token-description">Token Description</label>
-                            <span class="helper-text">Briefly describe your token</span>
+                            <span class="helper-text">What makes your memecoin special? Get creative!</span>
                         </div>
                     </div>
                     <button id="create-token" class="waves-effect waves-light btn btn-create">
-                        <i class="material-icons left">add_circle</i>Create Token
+                        <i class="material-icons left">rocket_launch</i>Launch Token
                     </button>
                 </div>
 
@@ -178,10 +379,10 @@
     </div>
 
     <!-- Transaction Success Modal -->
-    <div id="tx-success-modal" class="modal">
+            <div id="tx-success-modal" class="modal">
         <div class="modal-content">
-            <h4><i class="material-icons left">check_circle</i>Token Created Successfully!</h4>
-            <p>Your Ogma token has been created and registered on the blockchain.</p>
+            <h4><i class="material-icons">rocket_launch</i>Your Memecoin Has Launched! 🚀</h4>
+            <p>Your Ogma token is now on the blockchain and ready to moon!</p>
             <div class="section">
                 <h6>Token Address:</h6>
                 <p id="new-token-address" class="eth-address"></p>
@@ -193,7 +394,7 @@
                     <i class="material-icons left">open_in_new</i>View on Etherscan
                 </a>
             </div>
-            <p>60% of the token supply has been locked for 30 days, and 40% has been transferred to your wallet.</p>
+            <p>🔒 60% of your tokens are locked for 30 days, and 40% are in your wallet ready to use!</p>
         </div>
         <div class="modal-footer">
             <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
