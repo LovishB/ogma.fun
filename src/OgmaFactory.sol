@@ -99,18 +99,20 @@ contract OgmaFactory is Ownable, ReentrancyGuard {
         }
         newToken.transferOwnership(tokenOwner);
 
-        // Register token in storage
-        ogmaStorage.registerToken(
-            address(newToken),
-            tokenOwner,
-            _tokenName,
-            _tokenSymbol,
-            _tokenURI,
-            _tokenDescription,
-            totalSupply,
-            supplyToLock,
-            unlockDate
-        );
+        // Create a TokenInfo struct to pass to registerToken
+        OgmaStorage.TokenInfo memory tokenInfo = OgmaStorage.TokenInfo({
+            name: _tokenName,
+            symbol: _tokenSymbol,
+            uri: _tokenURI,
+            description: _tokenDescription,
+            owner: tokenOwner,
+            totalSupply: totalSupply,
+            lockedSupply: supplyToLock,
+            unlockDate: unlockDate
+        });
+
+        // Register token in storage with the struct
+        ogmaStorage.registerToken(tokenInfo, address(newToken));
 
         emit TokenMinted(
             address(newToken),

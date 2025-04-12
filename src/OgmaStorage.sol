@@ -46,50 +46,14 @@ contract OgmaStorage is Ownable {
     }
 
     /**
-     * @dev Register a new token in storage
-     * @param _tokenAddress Address of the token contract
-     * @param _tokenOwner Address of the token owner
-     * @param _name Name of the token
-     * @param _symbol Symbol of the token
-     * @param _uri URI for token metadata/image
-     * @param _description Description of the token
-     * @param _totalSupply Total supply of the token
-     * @param _lockedSupply Amount of supply that is locked
-     * @param _unlockDate Timestamp when locked tokens become available
+     * @dev Register a new token in storage using TokenInfo struct directly
+     * @param _tokenInfo TokenInfo struct containing all token information
      */
-    function registerToken(
-        address _tokenAddress,
-        address _tokenOwner,
-        string calldata _name,
-        string calldata _symbol,
-        string calldata _uri,
-        string calldata _description,
-        uint256 _totalSupply,
-        uint256 _lockedSupply,
-        uint256 _unlockDate
-    ) external isFactoryAuthorized {
-        // Input validation
-        if (_tokenAddress == address(0) || _tokenOwner == address(0)) revert ZeroAddress();
-        if (bytes(_name).length == 0 || bytes(_symbol).length == 0) revert EmptyString();
-        if (_totalSupply == 0 || _lockedSupply > _totalSupply) revert InvalidSupply();
-        if (_unlockDate <= block.timestamp) revert InvalidUnlockDate();
-        
-        // Create and store token info
-        TokenInfo memory newToken = TokenInfo({
-            name: _name,
-            symbol: _symbol,
-            uri: _uri,
-            description: _description,
-            owner: _tokenOwner,
-            totalSupply: _totalSupply,
-            lockedSupply: _lockedSupply,
-            unlockDate: _unlockDate
-        });
-        
-        s_tokens[_tokenAddress] = newToken;
+    function registerToken(TokenInfo calldata _tokenInfo, address _tokenAddress) external isFactoryAuthorized {
+        s_tokens[_tokenAddress] = _tokenInfo;
         s_tokenAddresses.push(_tokenAddress);
         
-        emit TokenRegistered(_tokenAddress, _tokenOwner, _name, _symbol);
+        emit TokenRegistered(_tokenAddress, _tokenInfo.owner, _tokenInfo.name, _tokenInfo.symbol);
     }
 
     /**

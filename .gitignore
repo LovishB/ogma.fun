@@ -1,2 +1,4 @@
 lib/
 settings.json
+out/
+cache/
