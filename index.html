@@ -988,13 +988,8 @@
                 
                 // Initialize provider if not already initialized
                 if (!provider) {
-                    // Check if ethereum object exists
-                    if (typeof window.ethereum !== 'undefined') {
-                        provider = new ethers.providers.Web3Provider(window.ethereum);
-                    } else {
-                        // Fallback to public RPC endpoint if no wallet is available
-                        provider = new ethers.providers.JsonRpcProvider('https://sepolia.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161');
-                    }
+                    // Use Alchemy's public RPC endpoint for Sepolia testnet
+                    provider = new ethers.providers.JsonRpcProvider('https://eth-sepolia.g.alchemy.com/v2/KfeSu5q27FaoFJqNzanj3VemrijlRuUM');
                 }
                 
                 // Initialize storage contract if not already initialized
@@ -1127,7 +1122,7 @@
             try {
                 // Initialize provider if not already initialized
                 if (!provider) {
-                    provider = new ethers.providers.Web3Provider(window.ethereum);
+                    provider = new ethers.providers.JsonRpcProvider('https://eth-sepolia.g.alchemy.com/v2/KfeSu5q27FaoFJqNzanj3VemrijlRuUM');
                 }
                 
                 // Initialize storage contract if not already initialized
