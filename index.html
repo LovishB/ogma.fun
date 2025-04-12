@@ -189,6 +189,9 @@
             <div class="section">
                 <h6>Transaction Hash:</h6>
                 <p id="tx-hash" class="eth-address"></p>
+                <a id="tx-link" href="#" target="_blank" class="waves-effect waves-light btn hidden">
+                    <i class="material-icons left">open_in_new</i>View on Etherscan
+                </a>
             </div>
             <p>60% of the token supply has been locked for 30 days, and 40% has been transferred to your wallet.</p>
         </div>
@@ -350,15 +353,52 @@
                 showStatus('<div class="loader"></div> Transaction submitted! Waiting for confirmation...', 'info');
                 const receipt = await tx.wait();
                 
+                console.log("Transaction receipt:", receipt);
+                
                 // Get the token address from the event
-                const tokenAddress = receipt.logs[0].args[0]; // Assumes the token address is the first argument of the first event
+                // Handle different formats of transaction receipts
+                let tokenAddress;
+                try {
+                    // First attempt: try to find the TokenMinted event and get the token address
+                    if (receipt.logs && receipt.logs.length > 0) {
+                        const event = receipt.logs.find(log => {
+                            // Look for the event that contains the token address (first parameter)
+                            return log.topics && log.topics.length > 1;
+                        });
+                        
+                        if (event && event.args && event.args.length > 0) {
+                            tokenAddress = event.args[0];
+                        } else if (event && event.topics && event.topics.length > 1) {
+                            // If we can't get it from args, try to decode from topics
+                            tokenAddress = ethers.decodeEventLog(
+                                ["address", "string", "string", "string", "string"],
+                                event.data,
+                                event.topics
+                            )[0];
+                        }
+                    }
+                    
+                    // If we still don't have the token address, check if it's returned from the function
+                    if (!tokenAddress && tx.data) {
+                        // The createToken function returns the token address
+                        tokenAddress = "Address will be available on the blockchain explorer";
+                    }
+                } catch (error) {
+                    console.error("Error extracting token address:", error);
+                    tokenAddress = "Check transaction on block explorer";
+                }
                 
                 // Show success message and modal
                 showStatus('Token created successfully!', 'success');
                 
                 // Set the token address and transaction hash in the modal
-                document.getElementById('new-token-address').textContent = tokenAddress;
+                document.getElementById('new-token-address').textContent = tokenAddress || "Check transaction on block explorer";
                 document.getElementById('tx-hash').textContent = tx.hash;
+                
+                // Add link to view transaction on Sepolia Etherscan
+                const txLink = `https://sepolia.etherscan.io/tx/${tx.hash}`;
+                document.getElementById('tx-link').href = txLink;
+                document.getElementById('tx-link').classList.remove('hidden');
                 
                 // Open the success modal
                 const modal = M.Modal.getInstance(document.getElementById('tx-success-modal'));
