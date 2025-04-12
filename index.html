@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ogma Token Creator</title>
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Material CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            padding: 20px;
+        }
+        .card {
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        .card-title {
+            font-weight: 500;
+        }
+        .btn-connect {
+            background-color: #4285f4;
+            margin-bottom: 20px;
+        }
+        .btn-create {
+            background-color: #0f9d58;
+        }
+        .status-message {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background-color: #e2f3f5;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .hidden {
+            display: none;
+        }
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 3px solid #3498db;
+            animation: spin 2s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .wallet-info {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .header {
+            margin-bottom: 30px;
+        }
+        .header h4 {
+            color: #4285f4;
+        }
+        .badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-left: 10px;
+        }
+        .badge-sepolia {
+            background-color: #ff5722;
+            color: white;
+        }
+        .modal {
+            border-radius: 10px;
+            max-width: 500px;
+        }
+        .modal-content h4 {
+            color: #0f9d58;
+        }
+        .modal-footer {
+            padding: 10px 20px;
+            text-align: right;
+        }
+        .eth-address {
+            font-family: monospace;
+            background: #f0f0f0;
+            padding: 5px;
+            border-radius: 4px;
+            font-size: 14px;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header center-align">
+            <h4>Ogma Token Creator <span class="badge badge-sepolia">Sepolia</span></h4>
+            <p>Create your own ERC20 token on Sepolia Testnet</p>
+        </div>
+
+        <div class="card">
+            <div class="card-content">
+                <span class="card-title">Create New Token</span>
+                
+                <!-- Connect Wallet Section -->
+                <div class="section">
+                    <button id="connect-wallet" class="waves-effect waves-light btn btn-connect">
+                        <i class="material-icons left">account_balance_wallet</i>Connect Wallet
+                    </button>
+                    <div id="wallet-info" class="wallet-info hidden">
+                        Connected: <span id="wallet-address" class="eth-address"></span>
+                    </div>
+                </div>
+
+                <!-- Token Creation Form -->
+                <div id="token-form" class="section hidden">
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <input id="token-name" type="text" class="validate">
+                            <label for="token-name">Token Name</label>
+                            <span class="helper-text">E.g., "My Awesome Token"</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <input id="token-symbol" type="text" class="validate">
+                            <label for="token-symbol">Token Symbol</label>
+                            <span class="helper-text">E.g., "MAT"</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <input id="token-uri" type="text" class="validate">
+                            <label for="token-uri">Token URI</label>
+                            <span class="helper-text">URL to token metadata/image</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <textarea id="token-description" class="materialize-textarea"></textarea>
+                            <label for="token-description">Token Description</label>
+                            <span class="helper-text">Briefly describe your token</span>
+                        </div>
+                    </div>
+                    <button id="create-token" class="waves-effect waves-light btn btn-create">
+                        <i class="material-icons left">add_circle</i>Create Token
+                    </button>
+                </div>
+
+                <!-- Status Messages -->
+                <div id="status-message" class="status-message hidden"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction Success Modal -->
+    <div id="tx-success-modal" class="modal">
+        <div class="modal-content">
+            <h4><i class="material-icons left">check_circle</i>Token Created Successfully!</h4>
+            <p>Your Ogma token has been created and registered on the blockchain.</p>
+            <div class="section">
+                <h6>Token Address:</h6>
+                <p id="new-token-address" class="eth-address"></p>
+            </div>
+            <div class="section">
+                <h6>Transaction Hash:</h6>
+                <p id="tx-hash" class="eth-address"></p>
+            </div>
+            <p>60% of the token supply has been locked for 30 days, and 40% has been transferred to your wallet.</p>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
+        </div>
+    </div>
+
+    <!-- jQuery and Materialize JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <!-- Ethers.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.8.0/ethers.umd.min.js"></script>
+
+    <script>
+        // Constants
+        const OGMA_FACTORY_ADDRESS = '0xCE86EF8A6e62a074AAc72207eBCa824FE288e6E1';
+        const SEPOLIA_RPC_URL = 'https://eth-sepolia.g.alchemy.com/v2/KfeSu5q27FaoFJqNzanj3VemrijlRuUM';
+        
+        // Contract ABI for the OgmaFactory (simplified to include only what we need)
+        const FACTORY_ABI = [
+            {
+                "inputs": [
+                    {"internalType": "string", "name": "_tokenName", "type": "string"},
+                    {"internalType": "string", "name": "_tokenSymbol", "type": "string"},
+                    {"internalType": "string", "name": "_tokenURI", "type": "string"},
+                    {"internalType": "string", "name": "_tokenDescription", "type": "string"}
+                ],
+                "name": "createToken",
+                "outputs": [{"internalType": "address", "name": "", "type": "address"}],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ];
+
+        // Global variables
+        let provider, signer, factoryContract;
+        
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Materialize components
+            M.Modal.init(document.querySelectorAll('.modal'));
+            
+            // Add event listeners
+            document.getElementById('connect-wallet').addEventListener('click', connectWallet);
+            document.getElementById('create-token').addEventListener('click', createToken);
+            
+            // Check if MetaMask is available after a short delay
+            setTimeout(() => {
+                if (window.ethereum || window.web3) {
+                    console.log("MetaMask is installed and available!");
+                } else {
+                    console.warn("MetaMask not detected on page load");
+                }
+            }, 1000);
+        });
+
+        // Connect to MetaMask wallet
+        async function connectWallet() {
+            try {
+                console.log("Connect wallet clicked");
+                console.log("Ethereum detection:", {
+                    ethereum: typeof window.ethereum,
+                    isMetaMask: window.ethereum?.isMetaMask,
+                    web3: typeof window.web3
+                });
+                
+                // More robust check for MetaMask
+                if (typeof window.ethereum === 'undefined') {
+                    showStatus('MetaMask not detected. Please make sure MetaMask is installed and this page is opened using a local server.', 'error');
+                    console.log('Ethereum provider not found. Try using a local server instead of opening the file directly.');
+                    return;
+                }
+
+                // Request accounts
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                
+                // Check if user connected any accounts
+                if (accounts.length === 0) {
+                    showStatus('Please connect to MetaMask!', 'error');
+                    return;
+                }
+
+                // Create a provider
+                provider = new ethers.BrowserProvider(window.ethereum);
+                
+                // Get the signer
+                signer = await provider.getSigner();
+                
+                // Get the network
+                const network = await provider.getNetwork();
+                
+                // Check if connected to Sepolia (chain ID 11155111)
+                if (network.chainId !== 11155111n) {
+                    showStatus('Please connect to Sepolia testnet!', 'error');
+                    
+                    // Prompt user to switch to Sepolia
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: '0xaa36a7' }], // Sepolia chain ID in hex
+                        });
+                    } catch (switchError) {
+                        showStatus('Failed to switch to Sepolia network', 'error');
+                        return;
+                    }
+                }
+                
+                // Initialize factory contract
+                factoryContract = new ethers.Contract(
+                    OGMA_FACTORY_ADDRESS,
+                    FACTORY_ABI,
+                    signer
+                );
+                
+                // Show connected account
+                const address = await signer.getAddress();
+                document.getElementById('wallet-address').textContent = address;
+                
+                // Show wallet info and token form
+                document.getElementById('wallet-info').classList.remove('hidden');
+                document.getElementById('token-form').classList.remove('hidden');
+                document.getElementById('connect-wallet').classList.add('hidden');
+                
+                showStatus('Wallet connected successfully!', 'success');
+            } catch (error) {
+                console.error('Connection error:', error);
+                showStatus('Failed to connect wallet: ' + error.message, 'error');
+            }
+        }
+
+        // Create a new token
+        async function createToken() {
+            try {
+                // Get form values
+                const tokenName = document.getElementById('token-name').value.trim();
+                const tokenSymbol = document.getElementById('token-symbol').value.trim();
+                const tokenURI = document.getElementById('token-uri').value.trim();
+                const tokenDescription = document.getElementById('token-description').value.trim();
+                
+                // Validate inputs
+                if (!tokenName || !tokenSymbol || !tokenURI || !tokenDescription) {
+                    showStatus('Please fill in all fields!', 'error');
+                    return;
+                }
+                
+                // Show pending status
+                showStatus('<div class="loader"></div> Creating token... Please confirm the transaction in MetaMask.', 'info');
+                
+                // Call createToken function on the contract
+                const tx = await factoryContract.createToken(
+                    tokenName,
+                    tokenSymbol,
+                    tokenURI,
+                    tokenDescription
+                );
+                
+                // Wait for the transaction to be mined
+                showStatus('<div class="loader"></div> Transaction submitted! Waiting for confirmation...', 'info');
+                const receipt = await tx.wait();
+                
+                // Get the token address from the event
+                const tokenAddress = receipt.logs[0].args[0]; // Assumes the token address is the first argument of the first event
+                
+                // Show success message and modal
+                showStatus('Token created successfully!', 'success');
+                
+                // Set the token address and transaction hash in the modal
+                document.getElementById('new-token-address').textContent = tokenAddress;
+                document.getElementById('tx-hash').textContent = tx.hash;
+                
+                // Open the success modal
+                const modal = M.Modal.getInstance(document.getElementById('tx-success-modal'));
+                modal.open();
+                
+                // Reset the form
+                document.getElementById('token-name').value = '';
+                document.getElementById('token-symbol').value = '';
+                document.getElementById('token-uri').value = '';
+                document.getElementById('token-description').value = '';
+                
+                // Re-initialize Materialize form elements (to reset labels)
+                M.updateTextFields();
+                
+            } catch (error) {
+                console.error('Token creation error:', error);
+                showStatus('Failed to create token: ' + error.message, 'error');
+            }
+        }
+
+        // Show status message with appropriate styling
+        function showStatus(message, type) {
+            const statusElement = document.getElementById('status-message');
+            statusElement.innerHTML = message;
+            statusElement.className = 'status-message ' + type;
+            statusElement.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
