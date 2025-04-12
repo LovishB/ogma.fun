@@ -344,7 +344,35 @@
         
         @media (max-width: 600px) {
             #latest-tokens-container {
-                grid-layout: 1fr;
+                grid-template-columns: 1fr;
+                max-width: 100%;
+            }
+            
+            .token-card {
+                width: 100%;
+                margin: 0 0 20px 0;
+            }
+            
+            .token-card-content {
+                padding: 15px;
+            }
+            
+            .token-image-container {
+                margin-bottom: 10px;
+            }
+            
+            .token-logo {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .token-meta {
+                font-size: 12px;
+            }
+            
+            .token-description {
+                font-size: 0.85rem;
+                -webkit-line-clamp: 2;
             }
         }
         
