@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ogma Token Creator</title>
+    <title>Ogma Token Creator with Latest Tokens</title>
     <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <!-- Material CSS -->
@@ -76,6 +76,21 @@
             transform: translateY(-3px);
             box-shadow: 0 8px 20px rgba(138, 43, 226, 0.6);
             background-color: #7B68EE;
+        }
+        .btn-refresh {
+            background-color: #4CAF50;
+            border-radius: 30px;
+            padding: 0 25px;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+        .btn-refresh:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.6);
+            background-color: #43A047;
         }
         .status-message {
             padding: 15px;
@@ -183,6 +198,11 @@
             border-radius: 20px;
             max-width: 500px;
             background: linear-gradient(135deg, #fff, #f0f0ff);
+            max-height: 90vh !important;
+            overflow-y: auto !important;
+        }
+        .modal-content {
+            padding-bottom: 20px !important;
         }
         .modal-content h4 {
             color: #8A2BE2;
@@ -296,6 +316,253 @@
             transform: translateY(-2px);
             box-shadow: 0 6px 15px rgba(255, 215, 0, 0.6);
         }
+        
+        /* New styles for latest tokens section */
+        .section-title {
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Grid layout for tokens */
+        #latest-tokens-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 992px) {
+            #latest-tokens-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 600px) {
+            #latest-tokens-container {
+                grid-layout: 1fr;
+            }
+        }
+        
+        .token-card {
+            margin: 0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .token-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+        .token-card:after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #FF69B4, #8A2BE2);
+        }
+        .token-card-content {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 15px;
+        }
+        .token-image-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        .token-logo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #FFD700;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            background-color: white;
+        }
+        .token-info {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+        }
+        .token-name {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #8A2BE2;
+            margin: 0 0 5px 0;
+        }
+        .token-symbol {
+            color: #FF69B4;
+            font-weight: 600;
+            margin: 0 0 10px 0;
+        }
+        .token-description {
+            margin: 0 0 15px 0;
+            font-size: 0.9rem;
+            color: #666;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .token-meta {
+            display: flex;
+            flex-direction: column;
+            margin-top: auto;
+            font-size: 14px;
+            text-align: left;
+        }
+        .token-meta div {
+            margin-bottom: 5px;
+            color: #666;
+        }
+        .token-meta i {
+            font-size: 16px;
+            margin-right: 3px;
+            color: #8A2BE2;
+            vertical-align: middle;
+        }
+        .token-placeholder {
+            text-align: center;
+            padding: 30px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 15px;
+            border: 2px dashed #FF69B4;
+            color: #8A2BE2;
+            font-weight: 500;
+            grid-column: 1 / -1;
+        }
+        .token-action {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        .token-card:hover .token-action {
+            opacity: 1;
+        }
+        .token-action a {
+            color: #8A2BE2;
+            margin-left: 10px;
+            transition: all 0.3s ease;
+        }
+        .token-action a:hover {
+            color: #FF69B4;
+            transform: scale(1.2);
+        }
+        .token-detail-modal {
+            max-width: 600px;
+        }
+        .token-detail-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .token-detail-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #FFD700;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin-right: 20px;
+            background-color: white;
+        }
+        .token-detail-name {
+            flex-grow: 1;
+        }
+        .token-detail-name h4 {
+            margin: 0;
+            font-weight: 700;
+            color: #8A2BE2;
+        }
+        .token-detail-name p {
+            margin: 5px 0 0;
+            color: #FF69B4;
+            font-weight: 600;
+            font-size: 18px;
+        }
+        .token-detail-section {
+            margin-bottom: 20px;
+        }
+        .token-detail-section h6 {
+            color: #8A2BE2;
+            font-weight: 600;
+            border-bottom: 2px solid #FFD700;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+        .token-detail-info {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .token-detail-info div {
+            width: 50%;
+            margin-bottom: 10px;
+        }
+        .token-detail-info span.label {
+            font-weight: 500;
+            color: #666;
+            margin-right: 5px;
+        }
+        .token-detail-info span.value {
+            font-weight: 600;
+            color: #333;
+        }
+        .token-description {
+            background-color: #f7f7ff;
+            padding: 15px;
+            border-radius: 8px;
+            color: #333;
+            font-style: italic;
+            border-left: 4px solid #8A2BE2;
+        }
+        .load-more {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .no-tokens {
+            text-align: center;
+            padding: 40px 20px;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 500;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        .refresh-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+        }
+        #tx-success-modal .modal-content {
+            padding: 24px 24px 40px 24px !important;
+        }
+        #tx-success-modal .section {
+            margin-bottom: 20px !important;
+        }
+        #tx-success-modal .eth-address {
+            word-break: break-all;
+            margin: 10px 0;
+        }
+        #tx-success-modal .modal-footer {
+            padding: 15px 24px !important;
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
@@ -376,10 +643,34 @@
                 <div id="status-message" class="status-message hidden"></div>
             </div>
         </div>
+
+        <!-- New Section: Latest Tokens -->
+        <div class="section-title">
+            <div class="refresh-section">
+                <h5>Latest Launched Tokens 🔥</h5>
+                <button id="refresh-tokens" class="waves-effect waves-light btn btn-refresh">
+                    <i class="material-icons left">refresh</i>Refresh
+                </button>
+            </div>
+        </div>
+        
+        <div id="latest-tokens-container">
+            <!-- Tokens will be loaded here dynamically -->
+            <div class="token-placeholder">
+                <i class="material-icons large">hourglass_empty</i>
+                <p>Loading tokens...</p>
+            </div>
+        </div>
+        
+        <div class="load-more hidden">
+            <button id="load-more-tokens" class="waves-effect waves-light btn">
+                <i class="material-icons left">add</i>Load More
+            </button>
+        </div>
     </div>
 
     <!-- Transaction Success Modal -->
-            <div id="tx-success-modal" class="modal">
+    <div id="tx-success-modal" class="modal">
         <div class="modal-content">
             <h4><i class="material-icons">rocket_launch</i>Your Memecoin Has Launched! 🚀</h4>
             <p>Your Ogma token is now on the blockchain and ready to moon!</p>
@@ -401,20 +692,98 @@
         </div>
     </div>
 
-    <!-- jQuery and Materialize JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-    <!-- Ethers.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.8.0/ethers.umd.min.js"></script>
+    <!-- Token Detail Modal -->
+    <div id="token-detail-modal" class="modal token-detail-modal">
+        <div class="modal-content">
+            <div class="token-detail-header">
+                <img id="detail-token-logo" src="https://emojicdn.elk.sh/%F0%9F%9A%80" alt="Token Logo" class="token-detail-logo">
+                <div class="token-detail-name">
+                    <h4 id="detail-token-name">Token Name</h4>
+                    <p id="detail-token-symbol">SYMBOL</p>
+                </div>
+            </div>
+            
+            <div class="token-detail-section">
+                <h6>Description</h6>
+                <div id="detail-token-description" class="token-description">
+                    Token description will appear here.
+                </div>
+            </div>
+            
+            <div class="token-detail-section">
+                <h6>Token Information</h6>
+                <div class="token-detail-info">
+                    <div>
+                        <span class="label">Contract Address:</span>
+                        <span id="detail-token-address" class="value eth-address"></span>
+                    </div>
+                    <div>
+                        <span class="label">Creator:</span>
+                        <span id="detail-token-owner" class="value eth-address"></span>
+                    </div>
+                    <div>
+                        <span class="label">Total Supply:</span>
+                        <span id="detail-token-supply" class="value"></span>
+                    </div>
+                    <div>
+                        <span class="label">Locked Supply:</span>
+                        <span id="detail-token-locked" class="value"></span>
+                    </div>
+                    <div>
+                        <span class="label">Unlock Date:</span>
+                        <span id="detail-token-unlock" class="value"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="token-detail-section">
+                <h6>Actions</h6>
+                <div class="row">
+                    <div class="col s12">
+                        <a id="detail-token-etherscan" href="#" target="_blank" class="waves-effect waves-light btn">
+                            <i class="material-icons left">open_in_new</i>View on Etherscan
+                        </a>
+                        <a id="detail-token-add" href="#" class="waves-effect waves-light btn">
+                            <i class="material-icons left">add_circle</i>Add to Wallet
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
+        </div>
+    </div>
 
+    <!-- JavaScript Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    
     <script>
-        // Constants
-        const OGMA_FACTORY_ADDRESS = '0xCE86EF8A6e62a074AAc72207eBCa824FE288e6E1';
-        const SEPOLIA_RPC_URL = 'https://eth-sepolia.g.alchemy.com/v2/KfeSu5q27FaoFJqNzanj3VemrijlRuUM';
+        // Initialize Materialize components
+        document.addEventListener('DOMContentLoaded', function() {
+            var modals = document.querySelectorAll('.modal');
+            M.Modal.init(modals);
+        });
         
-        // Contract ABI for the OgmaFactory (simplified to include only what we need)
-        const FACTORY_ABI = [
-            {
+        // Wallet connection and token creation logic
+        const connectWalletBtn = document.getElementById('connect-wallet');
+        const createTokenBtn = document.getElementById('create-token');
+        const refreshTokensBtn = document.getElementById('refresh-tokens');
+        const loadMoreTokensBtn = document.getElementById('load-more-tokens');
+        const tokenForm = document.getElementById('token-form');
+        const walletInfo = document.getElementById('wallet-info');
+        const walletAddress = document.getElementById('wallet-address');
+        const statusMessage = document.getElementById('status-message');
+        const latestTokensContainer = document.getElementById('latest-tokens-container');
+        const txSuccessModal = document.getElementById('tx-success-modal');
+        const tokenDetailModal = document.getElementById('token-detail-modal');
+        
+        // Contract addresses and ABIs would be defined here
+        const factoryContractAddress = '0xCE86EF8A6e62a074AAc72207eBCa824FE288e6E1'; // Token factory contract address
+        const factoryContractABI = [
+        {
                 "inputs": [
                     {"internalType": "string", "name": "_tokenName", "type": "string"},
                     {"internalType": "string", "name": "_tokenSymbol", "type": "string"},
@@ -426,123 +795,132 @@
                 "stateMutability": "nonpayable",
                 "type": "function"
             }
-        ];
-
-        // Global variables
-        let provider, signer, factoryContract;
+        ]; // ABI array
         
-        // Initialize the application
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize Materialize components
-            M.Modal.init(document.querySelectorAll('.modal'));
-            
-            // Add event listeners
-            document.getElementById('connect-wallet').addEventListener('click', connectWallet);
-            document.getElementById('create-token').addEventListener('click', createToken);
-            
-            // Check if MetaMask is available after a short delay
-            setTimeout(() => {
-                if (window.ethereum || window.web3) {
-                    console.log("MetaMask is installed and available!");
-                } else {
-                    console.warn("MetaMask not detected on page load");
-                }
-            }, 1000);
-        });
-
-        // Connect to MetaMask wallet
-        async function connectWallet() {
-            try {
-                console.log("Connect wallet clicked");
-                console.log("Ethereum detection:", {
-                    ethereum: typeof window.ethereum,
-                    isMetaMask: window.ethereum?.isMetaMask,
-                    web3: typeof window.web3
-                });
-                
-                // More robust check for MetaMask
-                if (typeof window.ethereum === 'undefined') {
-                    showStatus('MetaMask not detected. Please make sure MetaMask is installed and this page is opened using a local server.', 'error');
-                    console.log('Ethereum provider not found. Try using a local server instead of opening the file directly.');
-                    return;
-                }
-
-                // Request accounts
-                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                
-                // Check if user connected any accounts
-                if (accounts.length === 0) {
-                    showStatus('Please connect to MetaMask!', 'error');
-                    return;
-                }
-
-                // Create a provider
-                provider = new ethers.BrowserProvider(window.ethereum);
-                
-                // Get the signer
-                signer = await provider.getSigner();
-                
-                // Get the network
-                const network = await provider.getNetwork();
-                
-                // Check if connected to Sepolia (chain ID 11155111)
-                if (network.chainId !== 11155111n) {
-                    showStatus('Please connect to Sepolia testnet!', 'error');
-                    
-                    // Prompt user to switch to Sepolia
-                    try {
-                        await window.ethereum.request({
-                            method: 'wallet_switchEthereumChain',
-                            params: [{ chainId: '0xaa36a7' }], // Sepolia chain ID in hex
-                        });
-                    } catch (switchError) {
-                        showStatus('Failed to switch to Sepolia network', 'error');
-                        return;
+        // Add storage contract address and ABI
+        const storageContractAddress = '0x15f73D946CA714BccF12063537D39576b3E2224D'; // Replace with actual address if different
+        const storageContractABI = [
+            {
+                "inputs": [
+                    {"internalType": "uint256", "name": "_count", "type": "uint256"}
+                ],
+                "name": "getLatestTokens",
+                "outputs": [
+                    {"internalType": "address[]", "name": "addresses", "type": "address[]"},
+                    {
+                        "components": [
+                            {"internalType": "string", "name": "name", "type": "string"},
+                            {"internalType": "string", "name": "symbol", "type": "string"},
+                            {"internalType": "string", "name": "uri", "type": "string"},
+                            {"internalType": "string", "name": "description", "type": "string"},
+                            {"internalType": "address", "name": "owner", "type": "address"},
+                            {"internalType": "uint256", "name": "totalSupply", "type": "uint256"},
+                            {"internalType": "uint256", "name": "lockedSupply", "type": "uint256"},
+                            {"internalType": "uint256", "name": "unlockDate", "type": "uint256"}
+                        ],
+                        "internalType": "struct OgmaStorage.TokenInfo[]",
+                        "name": "infos",
+                        "type": "tuple[]"
                     }
-                }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "getTokenCount",
+                "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [{"internalType": "address", "name": "_tokenAddress", "type": "address"}],
+                "name": "getTokenInfo",
+                "outputs": [
+                    {
+                        "components": [
+                            {"internalType": "string", "name": "name", "type": "string"},
+                            {"internalType": "string", "name": "symbol", "type": "string"},
+                            {"internalType": "string", "name": "uri", "type": "string"},
+                            {"internalType": "string", "name": "description", "type": "string"},
+                            {"internalType": "address", "name": "owner", "type": "address"},
+                            {"internalType": "uint256", "name": "totalSupply", "type": "uint256"},
+                            {"internalType": "uint256", "name": "lockedSupply", "type": "uint256"},
+                            {"internalType": "uint256", "name": "unlockDate", "type": "uint256"}
+                        ],
+                        "internalType": "struct OgmaStorage.TokenInfo",
+                        "name": "",
+                        "type": "tuple"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
+        
+        let currentPage = 1;
+        let tokensPerPage = 10;
+        let provider, signer, factoryContract, storageContract;
+        
+        // Connect wallet function
+        connectWalletBtn.addEventListener('click', async () => {
+            try {
+                // Request access to user's wallet
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
                 
-                // Initialize factory contract
+                // Initialize ethers provider and signer
+                provider = new ethers.providers.Web3Provider(window.ethereum);
+                signer = provider.getSigner();
+                const address = await signer.getAddress();
+                
+                // Initialize contracts
                 factoryContract = new ethers.Contract(
-                    OGMA_FACTORY_ADDRESS,
-                    FACTORY_ABI,
+                    factoryContractAddress,
+                    factoryContractABI,
+                    signer
+                );
+                storageContract = new ethers.Contract(
+                    storageContractAddress,
+                    storageContractABI,
                     signer
                 );
                 
-                // Show connected account
-                const address = await signer.getAddress();
-                document.getElementById('wallet-address').textContent = address;
+                // Update UI to show connected wallet
+                walletAddress.textContent = `${address.substring(0, 6)}...${address.substring(38)}`;
+                connectWalletBtn.classList.add('hidden');
+                walletInfo.classList.remove('hidden');
+                tokenForm.classList.remove('hidden');
                 
-                // Show wallet info and token form
-                document.getElementById('wallet-info').classList.remove('hidden');
-                document.getElementById('token-form').classList.remove('hidden');
-                document.getElementById('connect-wallet').classList.add('hidden');
+                showStatusMessage('Wallet connected successfully!', 'success');
                 
-                showStatus('Wallet connected successfully!', 'success');
+                // Load latest tokens
+                loadLatestTokens();
             } catch (error) {
-                console.error('Connection error:', error);
-                showStatus('Failed to connect wallet: ' + error.message, 'error');
+                console.error(error);
+                showStatusMessage('Failed to connect wallet. Please try again.', 'error');
             }
-        }
-
-        // Create a new token
-        async function createToken() {
+        });
+        
+        // Create token function
+        createTokenBtn.addEventListener('click', async () => {
+            const tokenName = document.getElementById('token-name').value.trim();
+            const tokenSymbol = document.getElementById('token-symbol').value.trim().toUpperCase();
+            const tokenURI = document.getElementById('token-uri').value.trim();
+            const tokenDescription = document.getElementById('token-description').value.trim();
+            
+            // Validate input
+            if (!tokenName || !tokenSymbol || !tokenURI || !tokenDescription) {
+                showStatusMessage('Please fill in all fields', 'error');
+                return;
+            }
+            
             try {
-                // Get form values
-                const tokenName = document.getElementById('token-name').value.trim();
-                const tokenSymbol = document.getElementById('token-symbol').value.trim();
-                const tokenURI = document.getElementById('token-uri').value.trim();
-                const tokenDescription = document.getElementById('token-description').value.trim();
+                // Show loading state
+                createTokenBtn.disabled = true;
+                createTokenBtn.innerHTML = '<div class="loader"></div>Creating...';
+                showStatusMessage('Creating your token, please confirm the transaction...', 'info');
                 
-                // Validate inputs
-                if (!tokenName || !tokenSymbol || !tokenURI || !tokenDescription) {
-                    showStatus('Please fill in all fields!', 'error');
-                    return;
-                }
-                
-                // Show pending status
-                showStatus('<div class="loader"></div> Creating token... Please confirm the transaction in MetaMask.', 'info');
-                
-                // Call createToken function on the contract
+                // Call contract function to create token
                 const tx = await factoryContract.createToken(
                     tokenName,
                     tokenSymbol,
@@ -550,83 +928,289 @@
                     tokenDescription
                 );
                 
-                // Wait for the transaction to be mined
-                showStatus('<div class="loader"></div> Transaction submitted! Waiting for confirmation...', 'info');
+                showStatusMessage('Transaction submitted! Waiting for confirmation...', 'info');
+                
+                // Wait for transaction to be mined
                 const receipt = await tx.wait();
                 
-                console.log("Transaction receipt:", receipt);
+                // Get the token address from event logs
+                const tokenAddress = '0x...'; // Parse from receipt events
                 
-                // Get the token address from the event
-                // Handle different formats of transaction receipts
-                let tokenAddress;
-                try {
-                    // First attempt: try to find the TokenMinted event and get the token address
-                    if (receipt.logs && receipt.logs.length > 0) {
-                        const event = receipt.logs.find(log => {
-                            // Look for the event that contains the token address (first parameter)
-                            return log.topics && log.topics.length > 1;
-                        });
-                        
-                        if (event && event.args && event.args.length > 0) {
-                            tokenAddress = event.args[0];
-                        } else if (event && event.topics && event.topics.length > 1) {
-                            // If we can't get it from args, try to decode from topics
-                            tokenAddress = ethers.decodeEventLog(
-                                ["address", "string", "string", "string", "string"],
-                                event.data,
-                                event.topics
-                            )[0];
-                        }
-                    }
-                    
-                    // If we still don't have the token address, check if it's returned from the function
-                    if (!tokenAddress && tx.data) {
-                        // The createToken function returns the token address
-                        tokenAddress = "Address will be available on the blockchain explorer";
-                    }
-                } catch (error) {
-                    console.error("Error extracting token address:", error);
-                    tokenAddress = "Check transaction on block explorer";
-                }
-                
-                // Show success message and modal
-                showStatus('Token created successfully!', 'success');
-                
-                // Set the token address and transaction hash in the modal
-                document.getElementById('new-token-address').textContent = tokenAddress || "Check transaction on block explorer";
+                // Show success modal
+                document.getElementById('new-token-address').textContent = tokenAddress;
                 document.getElementById('tx-hash').textContent = tx.hash;
-                
-                // Add link to view transaction on Sepolia Etherscan
-                const txLink = `https://sepolia.etherscan.io/tx/${tx.hash}`;
-                document.getElementById('tx-link').href = txLink;
+                document.getElementById('tx-link').href = `https://sepolia.etherscan.io/tx/${tx.hash}`;
                 document.getElementById('tx-link').classList.remove('hidden');
                 
-                // Open the success modal
-                const modal = M.Modal.getInstance(document.getElementById('tx-success-modal'));
-                modal.open();
+                const instance = M.Modal.getInstance(txSuccessModal);
+                instance.open();
                 
-                // Reset the form
+                // Reset form
                 document.getElementById('token-name').value = '';
                 document.getElementById('token-symbol').value = '';
                 document.getElementById('token-uri').value = '';
                 document.getElementById('token-description').value = '';
                 
-                // Re-initialize Materialize form elements (to reset labels)
-                M.updateTextFields();
-                
+                // Refresh token list
+                loadLatestTokens();
             } catch (error) {
-                console.error('Token creation error:', error);
-                showStatus('Failed to create token: ' + error.message, 'error');
+                console.error(error);
+                showStatusMessage('Failed to create token. Please try again.', 'error');
+            } finally {
+                createTokenBtn.disabled = false;
+                createTokenBtn.innerHTML = '<i class="material-icons left">rocket_launch</i>Launch Token';
+            }
+        });
+        
+        // Function to show status messages
+        function showStatusMessage(message, type) {
+            statusMessage.textContent = message;
+            statusMessage.className = `status-message ${type}`;
+            statusMessage.classList.remove('hidden');
+            
+            // Hide message after 5 seconds
+            setTimeout(() => {
+                statusMessage.classList.add('hidden');
+            }, 5000);
+        }
+        
+        // Function to load latest tokens
+        async function loadLatestTokens(page = 1) {
+            try {
+                if (page === 1) {
+                    latestTokensContainer.innerHTML = `
+                        <div class="token-placeholder">
+                            <i class="material-icons large">hourglass_empty</i>
+                            <p>Loading tokens...</p>
+                        </div>
+                    `;
+                }
+                
+                // Initialize provider if not already initialized
+                if (!provider) {
+                    provider = new ethers.providers.Web3Provider(window.ethereum);
+                }
+                
+                // Initialize storage contract if not already initialized
+                if (!storageContract) {
+                    storageContract = new ethers.Contract(
+                        storageContractAddress,
+                        storageContractABI,
+                        provider
+                    );
+                }
+                
+                // Always use a count of 10 tokens
+                const count = 10;
+                
+                // Call contract to get latest tokens
+                const [addresses, infos] = await storageContract.getLatestTokens(count);
+                
+                // Debug: Log the token data
+                console.log("Token addresses:", addresses);
+                console.log("Token infos:", infos);
+                
+                // Convert contract data to token objects
+                const tokens = addresses.map((address, index) => {
+                    const info = infos[index];
+                    
+                    // Debug: Log each token's URI
+                    console.log(`Token ${index} URI:`, info.uri);
+                    
+                    return {
+                        address: address,
+                        name: info.name,
+                        symbol: info.symbol,
+                        uri: info.uri,
+                        description: info.description,
+                        creator: info.owner,
+                        totalSupply: info.totalSupply,
+                        lockedSupply: info.lockedSupply,
+                        unlockDate: info.unlockDate
+                    };
+                });
+                
+                if (tokens.length === 0 && page === 1) {
+                    latestTokensContainer.innerHTML = `
+                        <div class="no-tokens">
+                            <i class="material-icons large">sentiment_dissatisfied</i>
+                            <p>No tokens found. Be the first to create one!</p>
+                        </div>
+                    `;
+                    document.querySelector('.load-more').classList.add('hidden');
+                    return;
+                }
+                
+                if (page === 1) {
+                    latestTokensContainer.innerHTML = '';
+                }
+                
+                // Display tokens
+                tokens.forEach(token => {
+                    const tokenCard = createTokenCard(token);
+                    latestTokensContainer.appendChild(tokenCard);
+                });
+                
+                // Show/hide load more button
+                if (tokens.length === count) {
+                    document.querySelector('.load-more').classList.remove('hidden');
+                } else {
+                    document.querySelector('.load-more').classList.add('hidden');
+                }
+                
+                currentPage = page;
+            } catch (error) {
+                console.error("Error loading tokens:", error);
+                latestTokensContainer.innerHTML = `
+                    <div class="no-tokens">
+                        <i class="material-icons large">error</i>
+                        <p>Error loading tokens. Please try again.</p>
+                    </div>
+                `;
             }
         }
-
-        // Show status message with appropriate styling
-        function showStatus(message, type) {
-            const statusElement = document.getElementById('status-message');
-            statusElement.innerHTML = message;
-            statusElement.className = 'status-message ' + type;
-            statusElement.classList.remove('hidden');
+        
+        // Function to create token card element
+        function createTokenCard(token) {
+            const div = document.createElement('div');
+            div.className = 'token-card card';
+            
+            // Format the unlock date
+            const unlockDate = new Date(token.unlockDate * 1000);
+            const formattedDate = unlockDate.toLocaleDateString();
+            
+            // Determine which image to use based on token symbol
+            const rocketEmojiUrl = 'https://emojicdn.elk.sh/%F0%9F%9A%80';
+            const specialSymbols = ['OGMA', 'RKTDG', 'AVT', 'PEPE'];
+            const imageUrl = specialSymbols.includes(token.symbol) ? rocketEmojiUrl : token.uri;
+            
+            div.innerHTML = `
+                <div class="token-card-content">
+                    <div class="token-image-container">
+                        <img src="${imageUrl}" alt="${token.name}" class="token-logo">
+                    </div>
+                    <div class="token-info">
+                        <h5 class="token-name">${token.name}</h5>
+                        <p class="token-symbol">${token.symbol}</p>
+                        <p class="token-description">${token.description}</p>
+                        <div class="token-meta">
+                            <div><i class="material-icons tiny">account_circle</i> ${token.creator.substring(0, 6)}...${token.creator.substring(38)}</div>
+                            <div><i class="material-icons tiny">lock</i> Locked until: ${formattedDate}</div>
+                            <div><i class="material-icons tiny">inventory_2</i> ${ethers.utils.formatEther(token.totalSupply)} ${token.symbol}</div>
+                        </div>
+                    </div>
+                    <div class="token-action">
+                        <a href="#" class="view-details" data-token-address="${token.address}"><i class="material-icons">info</i></a>
+                        <a href="https://sepolia.etherscan.io/token/${token.address}" target="_blank"><i class="material-icons">open_in_new</i></a>
+                    </div>
+                </div>
+            `;
+            
+            // Add event listener for view details button
+            div.querySelector('.view-details').addEventListener('click', (e) => {
+                e.preventDefault();
+                showTokenDetails(token.address);
+            });
+            
+            return div;
         }
+        
+        // Function to show token details
+        async function showTokenDetails(tokenAddress) {
+            try {
+                // Initialize provider if not already initialized
+                if (!provider) {
+                    provider = new ethers.providers.Web3Provider(window.ethereum);
+                }
+                
+                // Initialize storage contract if not already initialized
+                if (!storageContract) {
+                    storageContract = new ethers.Contract(
+                        storageContractAddress,
+                        storageContractABI,
+                        provider
+                    );
+                }
+                
+                // Fetch token details from contract
+                const tokenInfo = await storageContract.getTokenInfo(tokenAddress);
+                
+                // Determine which image to use based on token symbol
+                const rocketEmojiUrl = 'https://emojicdn.elk.sh/%F0%9F%9A%80';
+                const specialSymbols = ['OGMA', 'RKTDG', 'AVT', 'PEPE'];
+                const imageUrl = specialSymbols.includes(tokenInfo.symbol) ? rocketEmojiUrl : tokenInfo.uri;
+                
+                // Update modal with token details
+                document.getElementById('detail-token-logo').src = imageUrl;
+                document.getElementById('detail-token-name').textContent = tokenInfo.name;
+                document.getElementById('detail-token-symbol').textContent = tokenInfo.symbol;
+                document.getElementById('detail-token-description').textContent = tokenInfo.description;
+                document.getElementById('detail-token-address').textContent = tokenAddress;
+                document.getElementById('detail-token-owner').textContent = tokenInfo.owner;
+                document.getElementById('detail-token-supply').textContent = `${ethers.utils.formatEther(tokenInfo.totalSupply)} ${tokenInfo.symbol}`;
+                document.getElementById('detail-token-locked').textContent = `${ethers.utils.formatEther(tokenInfo.lockedSupply)} ${tokenInfo.symbol} (60%)`;
+                
+                const unlockDate = new Date(tokenInfo.unlockDate * 1000);
+                document.getElementById('detail-token-unlock').textContent = unlockDate.toLocaleDateString();
+                
+                document.getElementById('detail-token-etherscan').href = `https://sepolia.etherscan.io/token/${tokenAddress}`;
+                
+                // Add to wallet function
+                document.getElementById('detail-token-add').onclick = async () => {
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_watchAsset',
+                            params: {
+                                type: 'ERC20',
+                                options: {
+                                    address: tokenAddress,
+                                    symbol: tokenInfo.symbol,
+                                    decimals: 18,
+                                    image: imageUrl // Use the same conditional image URL here
+                                }
+                            }
+                        });
+                    } catch (error) {
+                        console.error(error);
+                    }
+                };
+                
+                // Show modal
+                const instance = M.Modal.getInstance(tokenDetailModal);
+                instance.open();
+            } catch (error) {
+                console.error(error);
+                showStatusMessage('Failed to load token details', 'error');
+            }
+        }
+        
+        // Refresh tokens button
+        refreshTokensBtn.addEventListener('click', () => {
+            loadLatestTokens();
+        });
+        
+        // Load more tokens button
+        loadMoreTokensBtn.addEventListener('click', () => {
+            loadLatestTokens(currentPage + 1);
+        });
+        
+        // Check if wallet is already connected on page load
+        window.addEventListener('load', async () => {
+            // Load tokens regardless of wallet connection
+            loadLatestTokens();
+            
+            if (window.ethereum && window.ethereum.isConnected()) {
+                try {
+                    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                    if (accounts.length > 0) {
+                        // Auto-connect if account is available
+                        connectWalletBtn.click();
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+        });
     </script>
 </body>
 </html>
