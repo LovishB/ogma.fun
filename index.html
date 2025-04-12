@@ -988,7 +988,13 @@
                 
                 // Initialize provider if not already initialized
                 if (!provider) {
-                    provider = new ethers.providers.Web3Provider(window.ethereum);
+                    // Check if ethereum object exists
+                    if (typeof window.ethereum !== 'undefined') {
+                        provider = new ethers.providers.Web3Provider(window.ethereum);
+                    } else {
+                        // Fallback to public RPC endpoint if no wallet is available
+                        provider = new ethers.providers.JsonRpcProvider('https://sepolia.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161');
+                    }
                 }
                 
                 // Initialize storage contract if not already initialized
@@ -1065,6 +1071,7 @@
                     <div class="no-tokens">
                         <i class="material-icons large">error</i>
                         <p>Error loading tokens. Please try again.</p>
+                        <p class="error-details" style="font-size: 0.8em; color: #666;">${error.message}</p>
                     </div>
                 `;
             }
@@ -1196,19 +1203,34 @@
         
         // Check if wallet is already connected on page load
         window.addEventListener('load', async () => {
-            // Load tokens regardless of wallet connection
-            loadLatestTokens();
-            
-            if (window.ethereum && window.ethereum.isConnected()) {
-                try {
-                    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-                    if (accounts.length > 0) {
-                        // Auto-connect if account is available
-                        connectWalletBtn.click();
+            try {
+                // Load tokens regardless of wallet connection
+                await loadLatestTokens();
+                
+                // Check if ethereum object exists and is connected
+                if (typeof window.ethereum !== 'undefined') {
+                    try {
+                        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                        if (accounts.length > 0) {
+                            // Auto-connect if account is available
+                            connectWalletBtn.click();
+                        }
+                    } catch (error) {
+                        console.error("Error checking wallet connection:", error);
                     }
-                } catch (error) {
-                    console.error(error);
+                } else {
+                    // Show message if no Web3 wallet is detected
+                    const walletSection = document.querySelector('.section');
+                    const noWalletMessage = document.createElement('div');
+                    noWalletMessage.className = 'status-message info';
+                    noWalletMessage.innerHTML = `
+                        <i class="material-icons left">info</i>
+                        No Web3 wallet detected. Install MetaMask or another Web3 wallet to create tokens.
+                    `;
+                    walletSection.insertBefore(noWalletMessage, connectWalletBtn);
                 }
+            } catch (error) {
+                console.error("Error during page initialization:", error);
             }
         });
     </script>
