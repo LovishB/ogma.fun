@@ -8,7 +8,8 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
  * @dev Storage contract for tracking all tokens created through OgmaFactory
  */
 contract OgmaStorage is Ownable {
-
+    address private s_ogmaFactory;
+    
     struct TokenInfo {
         string name;
         string symbol;
@@ -19,15 +20,27 @@ contract OgmaStorage is Ownable {
         uint256 lockedSupply;
         uint256 unlockDate;
     }
+    
     address[] public s_tokenAddresses;
     mapping(address => TokenInfo) public s_tokens;
-    address private s_ogmaFactory;
     
+    // Events
+    event TokenRegistered(address indexed tokenAddress, address indexed owner, string name, string symbol);
+    
+    // Custom Errors
+    error NotAuthorized();
+    error ZeroAddress();
+    error EmptyString();
+    error TokenAlreadyRegistered();
+    error InvalidSupply();
+    error InvalidUnlockDate();
+    error InvalidCount();
+
     constructor() Ownable(msg.sender) {}
 
-    modifier isFactoryAutorized() {
+    modifier isFactoryAuthorized() {
         if (msg.sender != s_ogmaFactory) {
-            revert("Not authorized to register token");
+            revert NotAuthorized();
         }
         _;
     }
@@ -35,6 +48,7 @@ contract OgmaStorage is Ownable {
     /**
      * @dev Register a new token in storage
      * @param _tokenAddress Address of the token contract
+     * @param _tokenOwner Address of the token owner
      * @param _name Name of the token
      * @param _symbol Symbol of the token
      * @param _uri URI for token metadata/image
@@ -45,6 +59,7 @@ contract OgmaStorage is Ownable {
      */
     function registerToken(
         address _tokenAddress,
+        address _tokenOwner,
         string calldata _name,
         string calldata _symbol,
         string calldata _uri,
@@ -52,19 +67,29 @@ contract OgmaStorage is Ownable {
         uint256 _totalSupply,
         uint256 _lockedSupply,
         uint256 _unlockDate
-    ) external isFactoryAutorized {
+    ) external isFactoryAuthorized {
+        // Input validation
+        if (_tokenAddress == address(0) || _tokenOwner == address(0)) revert ZeroAddress();
+        if (bytes(_name).length == 0 || bytes(_symbol).length == 0) revert EmptyString();
+        if (_totalSupply == 0 || _lockedSupply > _totalSupply) revert InvalidSupply();
+        if (_unlockDate <= block.timestamp) revert InvalidUnlockDate();
+        
+        // Create and store token info
         TokenInfo memory newToken = TokenInfo({
             name: _name,
             symbol: _symbol,
             uri: _uri,
             description: _description,
-            owner: msg.sender,
+            owner: _tokenOwner,
             totalSupply: _totalSupply,
             lockedSupply: _lockedSupply,
             unlockDate: _unlockDate
         });
+        
         s_tokens[_tokenAddress] = newToken;
         s_tokenAddresses.push(_tokenAddress);
+        
+        emit TokenRegistered(_tokenAddress, _tokenOwner, _name, _symbol);
     }
 
     /**
@@ -86,12 +111,23 @@ contract OgmaStorage is Ownable {
         view 
         returns (address[] memory addresses, TokenInfo[] memory infos) 
     {
+        uint256 tokenCount = s_tokenAddresses.length;
+        if (_count == 0) revert InvalidCount();
+        
+        if (_count > tokenCount) {
+            _count = tokenCount;
+        }
+        
         address[] memory latestTokens = new address[](_count);
         TokenInfo[] memory tokenInfos = new TokenInfo[](_count);
 
         for (uint256 i = 0; i < _count; i++) {
-            latestTokens[i] = s_tokenAddresses[s_tokenAddresses.length - 1 - i];
-            tokenInfos[i] = s_tokens[latestTokens[i]];
+            // Prevent underflow
+            if (i < tokenCount) {
+                uint256 index = tokenCount - 1 - i;
+                latestTokens[i] = s_tokenAddresses[index];
+                tokenInfos[i] = s_tokens[latestTokens[i]];
+            }
         }
         return (latestTokens, tokenInfos);
     }
